@@ -1,0 +1,11 @@
+Package: mg14
+Type: Package
+Title: mg14's favourite functions
+Version: 0.0.1
+Date: 2014-04-29
+Author: Moritz Gerstung
+Maintainer: <mg14@sanger.ac.uk>
+Description: Utility functions for R
+License:
+	GPL-3
+
