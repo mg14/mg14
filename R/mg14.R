@@ -340,9 +340,9 @@ colTrans <- function(col, f=2){
 	apply(hsv,2, function(x) hsv(x[1],x[2],x[3]))
 }
 
-jitterBox <- function(x,y,...){
+jitterBox <- function(x,y, xlim = c(1,nlevels(x)) + c(-.5,.5),...){
 	#boxplot(y ~ x, ..., notch=TRUE)
-	plot(jitter(as.numeric(x)),y, ..., xaxt="n", pch=16)
+	plot(jitter(as.numeric(x)),y, xlim = xlim, ..., xaxt="n", pch=16)
 	s <- split(y,x)
 	m <- sapply(s, mean)
 	n <- 1:length(m)
@@ -351,4 +351,8 @@ jitterBox <- function(x,y,...){
 	rect(n-.2,m-c,n+.2,m+c,border=NA, col="#88888844")
 	segments(n-.2,m,n+.2,m, lwd=2)
 	axis(side = 1, at=n, labels=levels(x))
+	if(length(unique(x))>1){
+		a <- anova(lm(y~x))
+		mtext(side=3, line=0, text= paste("P =", format(a$`Pr(>F)`[1],digits=2)))
+	}
 }
