@@ -20,7 +20,7 @@ donut <- function(x, r0=0.5, r1=.75,...) {
 require(RColorBrewer)
 set1 <- brewer.pal(9,"Set1")
 
-plotcvnet = function(cvnet,X, main="", simple.annot=NULL, col=set1, col0="grey", cex=sqrt(abs(colMeans(X, na.rm=TRUE))[n]+0.02)*5,...){
+plotcvnet = function(cvnet,X, main="", simple.annot=NULL, col=set1, col0="grey", cex=sqrt(abs(colMeans(X, na.rm=TRUE))[n]+0.02)*5,xlim=c(0.5,ncol(X)),...){
 	first=function(x) which(x)[1]
 	lollyplot <- function(cvnet, beta, ..., X, main, cex) {
 		r <- rank(cvnet$nzero[apply(beta!=0,1,first)], ties.method="first")
@@ -40,7 +40,7 @@ plotcvnet = function(cvnet,X, main="", simple.annot=NULL, col=set1, col0="grey",
 		ix <- c(ix[1],ix)
 		xx <- c(0.5,xx[o])
 		#ix = c(ix[1],ix)
-		plot(xx, R[ix], type="S", xaxt="n", xlab="", ylim=c(0,max(Rup)), ylab=expression(paste("Explained variance ",R^2)), main = main, xlim=c(0.5,ncol(X)), col=set1[1],...)
+		plot(xx, R[ix], type="S", xaxt="n", xlab="", ylim=c(0,max(Rup)), ylab=expression(paste("Explained variance ",R^2)), main = main, xlim=xlim, col=set1[1],...)
 		polygon(rep(c(xx,rev(xx)), each=2)[-2*length(ix) + c(0,-1)], rep(c(Rup[ix],rev(Rlo[ix])), each=2)[-c(1,4*length(ix))], border=NA, col = paste(set1[1],"22", sep=""))		
 		lines(xx, cvnet$lambda[ix]/max(cvnet$lambda)*max(R), lty=1, type="S", col="black")
 		u = par("usr")[3:4]
