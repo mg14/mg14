@@ -449,3 +449,13 @@ survdiff <- function (formula, data, subset, na.action, rho = 0, continuity = FA
 	else oldClass(rval) <- "survdiff"
 	rval
 }
+
+mergeLevels <- function(f, mergeList){
+	oldLevels <- setdiff(levels(f), unlist(mergeList))
+	newLevels <- as.list(oldLevels)
+	names(newLevels) <- oldLevels
+	newLevels <- c(newLevels, mergeList)
+	newFactor <- f
+	levels(newFactor) <- newLevels
+	return(newFactor)
+}
