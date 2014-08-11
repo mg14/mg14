@@ -344,10 +344,10 @@ jitterBox <- function(x,y, xlim = c(1,nlevels(x)) + c(-.5,.5),...){
 	#boxplot(y ~ x, ..., notch=TRUE)
 	plot(jitter(as.numeric(x)),y, xlim = xlim, ..., xaxt="n", pch=16)
 	s <- split(y,x)
-	m <- sapply(s, mean)
+	m <- sapply(s, mean, na.rm=TRUE)
 	n <- 1:length(m)
 	l <- sapply(s, length)
-	c <- qnorm(0.975,0,sapply(s, sd)/sqrt(l))
+	c <- qnorm(0.975,0,sapply(s, sd, na.rm=TRUE)/sqrt(l))
 	rect(n-.2,m-c,n+.2,m+c,border=NA, col="#88888844")
 	segments(n-.2,m,n+.2,m, lwd=2)
 	axis(side = 1, at=n, labels=levels(x))
@@ -458,4 +458,41 @@ mergeLevels <- function(f, mergeList){
 	newFactor <- f
 	levels(newFactor) <- newLevels
 	return(newFactor)
+}
+
+na.zero <- function(X){
+	w <- is.na(X)
+	X[w] <- 0
+	attr(X, "na.action") <- which(w)
+	return(X)
+}
+
+na.mean <- function(X){
+	w <- is.na(X)
+	X[w] <- mean(X, na.rm=TRUE)
+	attr(X, "na.action") <- which(w)
+	return(X)
+}
+
+
+glmnet.formula <- function (formula, data, subset, ...) 
+{
+
+	cl <- match.call()
+	mf <- match.call(expand.dots = FALSE)
+	m <- match(c("formula", "data", "subset"), names(mf), 0L)
+	mf <- mf[c(1L, m)]
+	mf$drop.unused.levels <- TRUE
+	mf[[1L]] <- quote(stats::model.frame)
+	mf <- eval(mf, parent.frame())
+	mt <- attr(mf, "terms")
+	y <- model.response(mf, "any")
+	if (is.empty.model(mt)) {
+		stop()
+	}
+	x <- model.matrix(mt, mf, contrasts)
+	g <- glmnet(x[,-1],y,...)
+	g$y <- y
+	g$x <- x
+	return(g)
 }
