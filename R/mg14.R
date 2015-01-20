@@ -3,7 +3,14 @@
 # Author: mg14
 ###############################################################################
 
-#' Function to indicate significance
+#' Function to transform P-values into symbols of significance (***)
+#' @param s A vector of P-values
+#' @param breaks The breaks
+#' @param labels The labels
+#' @return A character vector.
+#' 
+#' @author mg14
+#' @export
 sig2star = function(s, breaks=c(-Inf, 0.001,0.01,0.05,0.1,1), labels=c("***","**","*",".","")) {
 	r <- s
 	r[] <- as.character(cut(s, breaks=breaks, labels)) 
@@ -75,7 +82,19 @@ plotcvnet = function(cvnet,X, main="", simple.annot=NULL, col=set1, col0="grey",
 	}
 }
 
-rotatedLabel <- function(x0, y0, labels, pos = 1, cex=1, srt=45, ...) {
+#' Plot a rotated axis label
+#' @param x0 The x position
+#' @param y0 The y position
+#' @param labels The labels
+#' @param pos The positioning relative to the coordinate. Default = 1 (below).
+#' @param cex The character expansion factor. Default = 1.
+#' @param srt The degree of rotation. Default = 45.
+#' @param ... 
+#' @return NULL
+#' 
+#' @author mg14
+#' @export
+rotatedLabel <- function(x0 = seq_along(labels), y0 = rep(par("usr")[3], length(labels)), labels, pos = 1, cex=1, srt=45, ...) {
 	w <- strwidth(labels, units="user", cex=cex)
 	h <- strheight(labels, units="user",cex=cex)
 	u <- par('usr')
@@ -102,6 +121,13 @@ myscale <- function(data){
 	)
 }
 
+#' Jitter by violins
+#' @param x A vector of numbers
+#' @param magnitude The overall magnitude of scatter
+#' @return NULL
+#' 
+#' @author mg14
+#' @export
 violinJitter <- function(x, magnitude=1){
 	d <- density(x)
 	data.frame(x=x, y=runif(length(x),-magnitude/2, magnitude/2) * approxfun(d$x, d$y)(x))
@@ -450,6 +476,13 @@ survdiff <- function (formula, data, subset, na.action, rho = 0, continuity = FA
 	rval
 }
 
+#' Merge levels of a factor
+#' @param f A factor
+#' @param mergeList A list of type list(newlevel1 = c(oldlevel1, oldlevel2), newlevel2=c(...),...)
+#' @return A factor
+#' 
+#' @author mg14
+#' @export
 mergeLevels <- function(f, mergeList){
 	oldLevels <- setdiff(levels(f), unlist(mergeList))
 	newLevels <- as.list(oldLevels)
@@ -495,4 +528,44 @@ glmnet.formula <- function (formula, data, subset, ...)
 	g$y <- y
 	g$x <- x
 	return(g)
+}
+
+plotSurv <- function(f, col=1:(length(terms(f))-1)^2 , ...){
+	s <- survfit(f, ...)
+	c <- coxph(f, ...)
+	summary(c)
+	p <- 2*pnorm(abs(diff(c$coefficients)),sd=sqrt(sum(diag(c$var))), lower.tail=FALSE)
+	plot(s, col=col, mark=NA)
+	legend("topright", bty="", rownames(summary(s)$table), col=col, lty=1)
+	title(main=paste("P =",signif(p,2)), font=1)
+}
+
+splitSurv <- function(surv, timeTpl){
+	timeSurv <- surv[,1]
+	w <- which(timeTpl < timeSurv)
+	t1 <- c(rep(0,nrow(surv)), timeTpl[w])
+	t2 <- c(pmin(timeSurv, timeTpl, na.rm=TRUE), timeSurv[w])
+	event <- c(surv[,2], surv[w,2])
+	event[w] <- 0
+	Surv(t1,t2,event)
+}
+
+splitIndex <- function(surv, timeTpl){
+	timeSurv <- surv[,1]
+	w <- which(timeTpl < timeSurv)
+	c(1:nrow(surv), w)
+}
+
+makeTimeDependent <- function(dataFrame, timeTpl, timeSurv = dataFrame$time, time0Surv = rep(0, nrow(dataFrame)), event=dataFrame$event){
+	w <- which(timeTpl < timeSurv & timeTpl > time0Surv)
+	index <- c(1:nrow(dataFrame), w) 
+	d <- dataFrame[index,]
+	d$index <- index
+	d$time1 <- c(time0Surv, timeTpl[w])
+	d$time2 <- c(pmin(timeSurv, timeTpl, na.rm=TRUE), timeSurv[w])
+	d$transplant <- c(rep(0,nrow(dataFrame)), rep(1, length(w)))
+	e <- c(event, event[w])
+	e[w] <- 0
+	d$event <- e
+	return(d)
 }

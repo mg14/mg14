@@ -1,0 +1,25 @@
+\name{sig2star}
+\alias{sig2star}
+\title{Function to transform P-values into symbols of significance (***)}
+\usage{
+  sig2star(s, breaks = c(-Inf, 0.001, 0.01, 0.05, 0.1, 1),
+    labels = c("***", "**", "*", ".", ""))
+}
+\arguments{
+  \item{s}{A vector of P-values}
+
+  \item{breaks}{The breaks}
+
+  \item{labels}{The labels}
+}
+\value{
+  A character vector.
+}
+\description{
+  Function to transform P-values into symbols of
+  significance (***)
+}
+\author{
+  mg14
+}
+
