@@ -1,8 +1,8 @@
 Package: mg14
 Type: Package
 Title: mg14's favourite functions
-Version: 0.0.2
-Date: 2015-01-20
+Version: 0.0.3
+Date: 2015-02-10
 Author: Moritz Gerstung
 Maintainer: <mg14@sanger.ac.uk>
 Description: Utility functions for R
@@ -10,5 +10,3 @@ License: GPL-3
 Imports:
     RColorBrewer
 Requires: RColorBrewer
-Collate:
-    'mg14.R'

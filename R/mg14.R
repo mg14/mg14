@@ -357,6 +357,13 @@ lasso <- function(..., theta=1,  scale=TRUE) {
 	x
 }
 
+#' A pseudo transparency to a color
+#' @param col A color 
+#' @param f The amount of pseudotransparency 
+#' @return color
+#' 
+#' @author mg14
+#' @export
 colTrans <- function(col, f=2){
 	hsv <- apply(col2rgb(col), 2, rgb2hsv)
 	tmp <- car::logit(hsv[2,]*.9) - f
@@ -493,6 +500,12 @@ mergeLevels <- function(f, mergeList){
 	return(newFactor)
 }
 
+#' Replace NAs with zeros
+#' @param X 
+#' @return same as X 
+#' 
+#' @author mg14
+#' @export
 na.zero <- function(X){
 	w <- is.na(X)
 	X[w] <- 0
@@ -500,6 +513,12 @@ na.zero <- function(X){
 	return(X)
 }
 
+#' Replace NAs with mean
+#' @param X 
+#' @return same as X 
+#' 
+#' @author mg14
+#' @export
 na.mean <- function(X){
 	w <- is.na(X)
 	X[w] <- mean(X, na.rm=TRUE)
