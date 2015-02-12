@@ -32,7 +32,10 @@ donut <- function(x, r0=0.5, r1=.75,...) {
 #' 
 #' @author mg14
 #' @export
-entropy <- function(p) -sum(log(p^p))
+entropy <- function(p) {
+	stopifnot(sum(p)==1)
+	-sum(log(p^p))
+}
 
 
 require(RColorBrewer)
