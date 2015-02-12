@@ -24,6 +24,17 @@ donut <- function(x, r0=0.5, r1=.75,...) {
 	polygon(cos(seq(0,2*pi,l=100))*r0, sin(seq(0,2*pi,l=100))*r0, col="white", border=NA)
 }
 
+#' Compute entropy (base e) from a vector of probabilities
+#' 
+#' Given p, the entropy is computed as -sum(log(p^p)).
+#' @param p Vector of probabilities
+#' @return numeric 
+#' 
+#' @author mg14
+#' @export
+entropy <- function(p) -sum(log(p^p))
+
+
 require(RColorBrewer)
 set1 <- brewer.pal(9,"Set1")
 
