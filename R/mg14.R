@@ -33,7 +33,7 @@ donut <- function(x, r0=0.5, r1=.75,...) {
 #' @author mg14
 #' @export
 entropy <- function(p) {
-	stopifnot(sum(p)==1)
+	stopifnot(abs(sum(p)-1) < length(p)*.Machine$double.eps)
 	-sum(log(p^p))
 }
 
