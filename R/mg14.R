@@ -162,7 +162,7 @@ stars <- function (x, full = TRUE, scale = TRUE, radius = TRUE, labels = dimname
 		col.stars = NA, col.lines = NA, axes = FALSE, frame.plot = axes, 
 		main = NULL, sub = NULL, xlab = "", ylab = "", cex = 0.8, 
 		lwd = 0.25, lty = par("lty"), xpd = FALSE, mar = pmin(par("mar"), 
-				1.1 + c(2 * axes + (xlab != ""), 2 * axes + (ylab != ""), 1, 0)), add = FALSE, plot = TRUE, density=NULL, init.angle=0, ...) 
+				1.1 + c(2 * axes + (xlab != ""), 2 * axes + (ylab != ""), 1, 0)), add = FALSE, plot = TRUE, density=NA, init.angle=0, ...) 
 {
 	if (is.data.frame(x)) 
 		x <- data.matrix(x)
@@ -257,9 +257,7 @@ stars <- function (x, full = TRUE, scale = TRUE, radius = TRUE, labels = dimname
 	else {
 		for (i in 1L:n.loc) {
 			polygon(s.x[i, ], s.y[i, ], lwd = lwd, lty = lty, 
-					col = col.stars[i], density=density)
-			polygon(s.x[i, ], s.y[i, ], lwd = lwd, lty = lty, 
-					border = col.lines[i], col = col.stars[i], density=density)
+					border = col.lines[i], col = col.stars[i], density=density[i])
 			if (radius) 
 				segments(rep.int(xloc[i], n.seg), rep.int(yloc[i], 
 								n.seg), s.x[i, ], s.y[i, ], lwd = lwd, lty = lty)
