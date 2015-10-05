@@ -148,6 +148,39 @@ violinJitter <- function(x, magnitude=1){
 }
 
 
+#' Violins plot with jittered data points
+#' @param y the values to be plotted
+#' @param x the levels to be jittered
+#' @param col the colors to be used for the outline
+#' @param col.pty the colors used for the points
+#' @param magnitude the magnitude of the violins
+#' @param ... additional parameters passed to plot()
+#' @return NULL
+#' 
+#' @author mg14
+#' @examples 
+#' f <- rep(1:5, each=50)
+#' violinJitterPlot(rnorm(length(f), f), factor(f))
+#' @export
+violinJitterPlot <- function(y, x=factor(rep(1, length(y))), col=1:nlevels(x), col.pty = colTrans(col), magnitude=1,...){
+	yl <- split(y,x)
+	o <- order(x)
+	yj <- do.call("rbind",lapply(yl, violinJitter, magnitude = magnitude))
+	dt <- lapply(yl, density)
+	s <- max(sapply(dt, function(x) max(x$y)))
+	plot(na.omit(as.numeric(x)[o]) + yj$y/s, yj$x, col=col.pty[na.omit(as.numeric(x)[o])], xlab="",ylab="", xaxt="n",...)
+	axis(side=1, at=1:nlevels(x), labels=levels(x))
+	qt <- lapply(yl, quantile)
+	for(i in 1:length(dt)){
+		lines(i+dt[[i]]$y*magnitude/2/s, dt[[i]]$x, col=col[i])
+		lines(i-dt[[i]]$y*magnitude/2/s, dt[[i]]$x, col=col[i])
+		for(q in 2:4){
+			w <- which.min(abs(dt[[i]]$x-qt[[i]][q]))
+			segments(i+dt[[i]]$y[w]*magnitude/2/s, dt[[i]]$x[w],i-dt[[i]]$y[w]*magnitude/2/s, dt[[i]]$x[w], lwd=ifelse(q==3,2,1))
+		}
+	}
+}
+
 #' Stars plot
 #' 
 #' Modified from graphics::stars()
