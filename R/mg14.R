@@ -352,13 +352,13 @@ stars <- function (x, full = TRUE, scale = TRUE, radius = TRUE, labels = dimname
 }
 
 
-ggPlot <- function(x, g, width=.8, xlab="",...){
+ggPlot <- function(x, g, width=.8, xlab="", ylab="",...){
 	g <- factor(g)
 	s <- split(x, g)
-	o <- order(sapply(s[levels(g)], median))
+	o <- order(sapply(s[levels(g)], function(x) if(!all(is.na(x))) median(x, na.rm=TRUE) else NA), na.last=TRUE)
 	g <- factor(g, levels=levels(g)[o])
 	s <- split(x,g)
-	plot(unlist(sapply(s[levels(g)], function(x) (rank(x)-1)/(length(x)-1) - .5)) * width + sort(as.numeric(g)), unlist(s), xaxt="n", xlab=xlab, ...)
+	plot(unlist(sapply(s[levels(g)], function(x) (rank(x)-1)/(length(x)-1) - .5)) * width + sort(as.numeric(g)), unlist(s), xaxt="n", xlab=xlab, ylab=ylab, ...)
 	m <- sapply(s, median, na.rm=TRUE)
 	segments(1:nlevels(g)-width/2, m, 1:nlevels(g)+width/2, m)
 	abline(v=1:nlevels(g), lty=3)
