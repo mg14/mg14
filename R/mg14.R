@@ -352,14 +352,14 @@ stars <- function (x, full = TRUE, scale = TRUE, radius = TRUE, labels = dimname
 }
 
 
-ggPlot <- function(x, g, width=.8, ...){
+ggPlot <- function(x, g, width=.8, xlab="",...){
 	g <- factor(g)
 	s <- split(x, g)
 	o <- order(sapply(s[levels(g)], median))
 	g <- factor(g, levels=levels(g)[o])
 	s <- split(x,g)
-	plot(unlist(sapply(s[levels(g)], function(x) (rank(x)-1)/(length(x)-1) - .5)) * width + sort(as.numeric(g)), unlist(s), xaxt="n", ...)
-	m <- sapply(s, median)
+	plot(unlist(sapply(s[levels(g)], function(x) (rank(x)-1)/(length(x)-1) - .5)) * width + sort(as.numeric(g)), unlist(s), xaxt="n", xlab=xlab, ...)
+	m <- sapply(s, median, na.rm=TRUE)
 	segments(1:nlevels(g)-width/2, m, 1:nlevels(g)+width/2, m)
 	abline(v=1:nlevels(g), lty=3)
 	axis(side=1, at=1:nlevels(g), labels = levels(g))
@@ -647,3 +647,4 @@ makeTimeDependent <- function(dataFrame, timeTpl, timeSurv = dataFrame$time, tim
 pbound <- function(x, lower, upper){
 	pmin(pmax(x,lower),upper)
 }
+			
