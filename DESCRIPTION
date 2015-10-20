@@ -10,3 +10,4 @@ License: GPL-3
 Imports:
     RColorBrewer
 Requires: RColorBrewer
+Suggests: grImport2
