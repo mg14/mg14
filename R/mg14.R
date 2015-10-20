@@ -648,7 +648,7 @@ pbound <- function(x, lower, upper){
 	pmin(pmax(x,lower),upper)
 }
 			
-human <- '<?xml version="1.0" encoding="UTF-8"?>
+humanSvg <- '<?xml version="1.0" encoding="UTF-8"?>
 		<!-- Created by grConvert v0.1-0 -->
 		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="35pt" height="84pt" viewBox="0 0 35 84" version="1.1">
 		<g id="surface1">
@@ -656,6 +656,6 @@ human <- '<?xml version="1.0" encoding="UTF-8"?>
 		</g>
 		</svg>'
 
-human() <- function(){
-t <- tempfile(); writeLines(str, t); pic <- readPicture(t)
+human <- function(){
+t <- tempfile(); writeLines(humanSvg, t); pic <- readPicture(t)
 }
