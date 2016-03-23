@@ -659,3 +659,18 @@ humanSvg <- '<?xml version="1.0" encoding="UTF-8"?>
 human <- function(){
 t <- tempfile(); writeLines(humanSvg, t); pic <- readPicture(t)
 }
+
+#' Function to convert factors to numeric
+#' @param x A vector or data.frame
+#' @return A data.frame with numeric vectors, or a factors (if x is non-numeric), or a single vector if x was a vector
+#' 
+#' @author mg14
+#' @export
+numericalize <- function(x){
+	if(class(x)=="data.frame")
+		as.data.frame(sapply(x, .numericalize, simplify=FALSE))
+	else
+		.numericalize(x)
+	} # Convert factors to numeric 
+
+.numericalize <- function(x) if(class(x)!='factor') return(x) else if(all(is.na(as.numeric(levels(x))))) return(x) else return(as.numeric(as.character(x)))
