@@ -674,3 +674,115 @@ numericalize <- function(x){
 	} # Convert factors to numeric 
 
 .numericalize <- function(x) if(class(x)!='factor') return(x) else if(all(is.na(as.numeric(levels(x))))) return(x) else return(as.numeric(as.character(x)))
+
+asum <- function(x, dim, ...){
+	apply(x, setdiff(seq_along(dim(x)), dim), sum, ...)
+}
+
+nn.poisglm <- function(D, P, maxIter = 1e4, tol=1e-6) {
+	n <- nrow(D)
+	m <- ncol(D)
+	s <- ncol(P)
+	tP <- t(P)
+	rP <- rep(colSums(P), m)
+	D <- as.matrix(D)
+	E1 <- E2 <- matrix(runif(s * m, 1e-3, 1), ncol = m)
+	err <- 2*tol
+	
+	KD <- function(D, X) sum(D * log(D/X) - D + X)
+	k1 <- Inf
+	k2 <- 0
+	
+	iter <- 1
+	while ( (iter < maxIter & err > tol & k1 - k2 > tol) | iter <= 10) {
+		E1 <- E2
+		k1 <- k2
+		E2 <- E1 * (tP %*% (D/(P %*% (E1 + .Machine$double.eps))))/rP
+		k2 <- KD(D, P%*%E2)
+		iter <- iter + 1
+		err <- mean(abs(E2 - E1)/(E1+.Machine$double.eps), na.rm=TRUE)
+		if(iter %% 100 == 0) cat(round(-log10(err)))
+	}
+	cat("\n")
+	if(iter == maxIter) warning(paste("No convergence after",iter, "iterations."))
+	E2
+}
+
+
+mindist <- function(x, mindist=0.03){
+	y <- x
+	while( any((-diff(y))<mindist) ) {
+		ydiff = (-diff(y))
+		runs = rle(ydiff<mindist)
+		aux = which(ydiff<mindist)[1]
+		l = runs$lengths[which(runs$values)[1]]
+		cl = seq(aux,aux+l)
+		# New suggested values for the cluster chosen
+		centr = median(y[cl])
+		y[cl] = seq(mindist*(length(cl)-1)+0.001, 0, length.out=length(cl))
+		y[cl] = y[cl] - median(y[cl]) + centr
+	} 
+	return(y)
+}
+
+poisl <- function(X, theta, Y){
+	Yp <- X %*% theta
+	Y %*% log(Yp) - sum(Yp) - sum(lfactorial(Y))
+}
+
+poisdl <- function(X, theta, Y){
+	lambda <- as.numeric(X %*% theta)
+	t(Y / lambda - 1) %*% X
+}
+
+poisI <- function(X, theta, Y){
+	lambda <- as.numeric(X %*% theta)
+	t(Y/lambda^2 * X) %*% X
+}
+
+ssnmf <- function(D, S, s=0, maxIter=100, minE = 0, whichS = 1:ncol(D)){
+	n <- nrow(D)
+	o <- ncol(S)
+	m <- ncol(D)
+	P <- cbind(S, if(s>0) matrix(runif(n*s,0,1), ncol=s) else NULL)
+	P <- P/rep(colSums(P), each=nrow(P))
+	colnames(P) <- c(colnames(S), if(s >0) paste0("N.",1:s) else NULL)
+	E <- matrix(runif((s+o)*m, 0,1), ncol=m)
+	E <- E * (t(P)%*% (D / (P %*% E))) / rep(colSums(P), m)
+	
+	iter <- 1
+	while(iter < maxIter){
+		P <- P * ((D / (P %*% E)) %*% t(E)) / rep(rowSums(E), each=n)
+		P[,1:o] <- S
+		P <- P/rep(colSums(P), each=nrow(P))
+		E <- E * (t(P)%*% (D / (P %*% E))) / rep(colSums(P), m)
+		E[E/rep(colSums(E), each=nrow(E)) < minE] <- 0
+		E[-(1:o),setdiff(1:ncol(E), whichS)] <- 0
+		E <- E * rep(colSums(D)/colSums(E), each=nrow(E))
+		iter <- iter + 1
+	}
+	list(E=E,P=P)
+}
+
+nmSolve <- function(D, P, maxIter = 500, tol=1e-3) {
+	n <- nrow(D)
+	m <- ncol(D)
+	s <- ncol(P)
+	tP <- t(P)
+	rP <- rep(colSums(P), m)
+	D <- as.matrix(D)
+	E1 <- E2 <- matrix(runif(s * m, 1e-3, 1), ncol = m)
+	err <- 2*tol
+	
+	iter <- 1
+	while (iter < maxIter & err > tol) {
+		E1 <- E2
+		E2 <- E1 * (tP %*% (D/(P %*% (E1 + .Machine$double.eps))))/rP
+		iter <- iter + 1
+		err <- mean(abs(E2 - E1)/(E1+.Machine$double.eps), na.rm=TRUE)
+		if(iter %% 100 == 0) cat(round(-log10(err)))
+	}
+	cat("\n")
+	if(iter == maxIter) warning(paste("No convergence after",iter, "iterations."))
+	E2
+}
