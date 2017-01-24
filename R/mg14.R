@@ -711,15 +711,15 @@ nn.poisglm <- function(D, P, maxIter = 1e4, tol=1e-6) {
 
 mindist <- function(x, mindist=0.03){
 	y <- x
-	while( any((-diff(y))<mindist) ) {
-		ydiff = (-diff(y))
+	while( any((diff(y))<mindist) ) {
+		ydiff = (diff(y))
 		runs = rle(ydiff<mindist)
 		aux = which(ydiff<mindist)[1]
 		l = runs$lengths[which(runs$values)[1]]
 		cl = seq(aux,aux+l)
 		# New suggested values for the cluster chosen
 		centr = median(y[cl])
-		y[cl] = seq(mindist*(length(cl)-1)+0.001, 0, length.out=length(cl))
+		y[cl] = seq(0, mindist*(length(cl)-1)+0.001, length.out=length(cl))
 		y[cl] = y[cl] - median(y[cl]) + centr
 	} 
 	return(y)
