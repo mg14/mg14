@@ -786,3 +786,15 @@ nmSolve <- function(D, P, maxIter = 500, tol=1e-3) {
 	if(iter == maxIter) warning(paste("No convergence after",iter, "iterations."))
 	E2
 }
+
+roundProp <- function(x, p=100){
+	y <- floor(x)
+	d <- x-y
+	o <- order(d, decreasing=TRUE)
+	i <- 1
+	while(sum(y) < p){
+		y[o[i]] <- y[o[i]] + 1
+		i <- i+1
+	}
+	return(y)
+}
