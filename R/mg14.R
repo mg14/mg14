@@ -162,7 +162,7 @@ violinJitter <- function(x, magnitude=1){
 #' f <- rep(1:5, each=50)
 #' violinJitterPlot(rnorm(length(f), f), factor(f))
 #' @export
-violinJitterPlot <- function(y, x=factor(rep(1, length(y))), col=1:nlevels(x), col.pty = colTrans(col), magnitude=1,xlab="",ylab="",...){
+violinJitterPlot <- function(y, x=factor(rep(1, length(y))), col=1:nlevels(x), col.pty = colTrans(col), magnitude=1,xlab="",ylab="", plot.violins=TRUE,...){
 	yl <- split(y,x)
 	o <- order(x)
 	yj <- do.call("rbind",lapply(yl, violinJitter, magnitude = magnitude))
@@ -171,14 +171,15 @@ violinJitterPlot <- function(y, x=factor(rep(1, length(y))), col=1:nlevels(x), c
 	plot(na.omit(as.numeric(x)[o]) + yj$y/s, yj$x, col=col.pty[na.omit(as.numeric(x)[o])], xlab=xlab, ylab=ylab, xaxt="n",...)
 	axis(side=1, at=1:nlevels(x), labels=levels(x))
 	qt <- lapply(yl, quantile)
-	for(i in 1:length(dt)){
-		lines(i+dt[[i]]$y*magnitude/2/s, dt[[i]]$x, col=col[i])
-		lines(i-dt[[i]]$y*magnitude/2/s, dt[[i]]$x, col=col[i])
-		for(q in 2:4){
-			w <- which.min(abs(dt[[i]]$x-qt[[i]][q]))
-			segments(i+dt[[i]]$y[w]*magnitude/2/s, dt[[i]]$x[w],i-dt[[i]]$y[w]*magnitude/2/s, dt[[i]]$x[w], lwd=ifelse(q==3,2,1))
+	if(plot.violins)
+		for(i in 1:length(dt)){
+			lines(i+dt[[i]]$y*magnitude/2/s, dt[[i]]$x, col=col[i])
+			lines(i-dt[[i]]$y*magnitude/2/s, dt[[i]]$x, col=col[i])
+			for(q in 2:4){
+				w <- which.min(abs(dt[[i]]$x-qt[[i]][q]))
+				segments(i+dt[[i]]$y[w]*magnitude/2/s, dt[[i]]$x[w],i-dt[[i]]$y[w]*magnitude/2/s, dt[[i]]$x[w], lwd=ifelse(q==3,2,1))
+			}
 		}
-	}
 }
 
 #' Stars plot
