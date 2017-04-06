@@ -162,13 +162,13 @@ violinJitter <- function(x, magnitude=1){
 #' f <- rep(1:5, each=50)
 #' violinJitterPlot(rnorm(length(f), f), factor(f))
 #' @export
-violinJitterPlot <- function(y, x=factor(rep(1, length(y))), col=1:nlevels(x), col.pty = colTrans(col), magnitude=1,...){
+violinJitterPlot <- function(y, x=factor(rep(1, length(y))), col=1:nlevels(x), col.pty = colTrans(col), magnitude=1,xlab="",ylab="",...){
 	yl <- split(y,x)
 	o <- order(x)
 	yj <- do.call("rbind",lapply(yl, violinJitter, magnitude = magnitude))
 	dt <- lapply(yl, density)
 	s <- max(sapply(dt, function(x) max(x$y)))
-	plot(na.omit(as.numeric(x)[o]) + yj$y/s, yj$x, col=col.pty[na.omit(as.numeric(x)[o])], xlab="",ylab="", xaxt="n",...)
+	plot(na.omit(as.numeric(x)[o]) + yj$y/s, yj$x, col=col.pty[na.omit(as.numeric(x)[o])], xlab=xlab, ylab=ylab, xaxt="n",...)
 	axis(side=1, at=1:nlevels(x), labels=levels(x))
 	qt <- lapply(yl, quantile)
 	for(i in 1:length(dt)){
