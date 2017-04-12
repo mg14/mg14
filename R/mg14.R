@@ -864,7 +864,7 @@ scatterpie <- function(x,y, p, r, xlab="",ylab="", circles=FALSE, lwd.circle=rep
 		P <- t2xy(mean(x[i + 0:1]))
 		lab <- as.character(labels[i])
 		if (!is.na(lab) && nzchar(lab)) {
-			lines(c(1, 1.05) * P$x, c(1, 1.05) * P$y)
+			lines(c(1, 1.05) * P$x + x0, c(1, 1.05) * P$y + y0)
 			text(1.1 * P$x + x0, 1.1 * P$y + y0, labels[i], xpd = TRUE, 
 					adj = ifelse(P$x < 0, 1, 0), ...)
 		}
