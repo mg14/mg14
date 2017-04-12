@@ -799,3 +799,76 @@ roundProp <- function(x, p=100){
 	}
 	return(y)
 }
+
+scatterpie <- function(x,y, p, r, xlab="",ylab="", circles=FALSE, lwd.circle=rep(1, length(x)), lty.circle=rep(1, length(x)), add=FALSE ,...){
+	if(!add) plot(x,y, xlab=xlab, ylab=ylab, pch=NA)
+	for(i in seq_along(x)){
+		.pie(p[i,], x0=x[i], y0=y[i], radius=r[i], add=TRUE, ...)
+		if(circles){
+			u <- par("usr")
+			pr <- (u[2]-u[1])/(u[4]-u[3])
+			fr <- par("pin")[1]/par("pin")[2]
+			polygon(x[i] + cos(seq(0,2*pi, l=100)) * r[i], y[i]+sin(seq(0,2*pi, l=100)) * r[i] / pr * fr, col=NA, lty=lty.circle[i], lwd=lwd.circle[i])
+		}
+	}
+}
+
+.pie <- function (x, x0=0, y0=0, labels = names(x), edges = 200, radius = 0.8, clockwise = FALSE, 
+		init.angle = if (clockwise) 90 else 0, density = NULL, angle = 45, 
+		col = NULL, border = NULL, lty = NULL, main = NULL, add=FALSE,...) 
+{
+	if (!is.numeric(x) || any(is.na(x) | x < 0)) 
+		stop("'x' values must be positive.")
+	if (is.null(labels)) 
+		labels <- as.character(seq_along(x))
+	else labels <- as.graphicsAnnot(labels)
+	x <- c(0, cumsum(x)/sum(x))
+	dx <- diff(x)
+	nx <- length(dx)
+	if(!add) plot.new()
+	pin <- par("pin")
+	xlim <- ylim <- c(-1, 1) + c(x0,y0)
+	if (pin[1L] > pin[2L]) 
+		xlim <- (pin[1L]/pin[2L]) * xlim
+	else ylim <- (pin[2L]/pin[1L]) * ylim
+	if(!add) dev.hold()
+	on.exit(dev.flush())
+	if(!add) plot.window(xlim, ylim, "", asp = 1)
+	if (is.null(col)) 
+		col <- if (is.null(density)) 
+					c("white", "lightblue", "mistyrose", "lightcyan", 
+							"lavender", "cornsilk")
+				else par("fg")
+	col <- rep(col, length.out = nx)
+	border <- rep(border, length.out = nx)
+	lty <- rep(lty, length.out = nx)
+	angle <- rep(angle, length.out = nx)
+	density <- rep(density, length.out = nx)
+	twopi <- if (clockwise) 
+				-2 * pi
+			else 2 * pi
+	u <- par("usr")
+	pr <- (u[2]-u[1])/(u[4]-u[3])
+	fr <- par("pin")[1]/par("pin")[2]
+	t2xy <- function(t) {
+		t2p <- twopi * t + init.angle * pi/180
+		list(x = radius * cos(t2p), y = radius * sin(t2p)/pr*fr)
+	}
+	for (i in 1L:nx) {
+		n <- max(2, floor(edges * dx[i]))
+		P <- t2xy(seq.int(x[i], x[i + 1], length.out = n))
+		P$x <- P$x + x0
+		P$y <- P$y + y0
+		polygon(c(P$x, x0), c(P$y, y0), density = density[i], angle = angle[i], 
+				border = border[i], col = col[i], lty = lty[i])
+		P <- t2xy(mean(x[i + 0:1]))
+		lab <- as.character(labels[i])
+		if (!is.na(lab) && nzchar(lab)) {
+			lines(c(1, 1.05) * P$x, c(1, 1.05) * P$y)
+			text(1.1 * P$x + x0, 1.1 * P$y + y0, labels[i], xpd = TRUE, 
+					adj = ifelse(P$x < 0, 1, 0), ...)
+		}
+	}
+	title(main = main, ...)
+	invisible(NULL)
+}
