@@ -422,10 +422,10 @@ lasso <- function(..., theta=1,  scale=TRUE) {
 #' @export
 colTrans <- function(col, f=2){
 	hsv <- apply(col2rgb(col), 2, rgb2hsv)
-	tmp <- car::logit(hsv[2,]*.9) - f
-	hsv[2,] <- 1/(exp(-tmp) +1)
-	tmp <- car::logit(hsv[3,]*.9) + f
-	hsv[3,] <- 1/(exp(-tmp) +1)
+	tmp <- car::logit(hsv[2,]*.95 + 0.025) - f
+	hsv[2,] <- pmin(1,pmax(0,(1/(exp(-tmp) +1) - 0.025)/.95))
+	tmp <- car::logit(hsv[3,]*.95 + 0.025) + f
+	hsv[3,] <- pmin(1,pmax(0,(1/(exp(-tmp) +1) - 0.025)/.95))
 	apply(hsv,2, function(x) hsv(x[1],x[2],x[3]))
 }
 
