@@ -1,14 +1,16 @@
 Package: mg14
 Type: Package
 Title: mg14's favourite functions
-Version: 0.0.5
-Date: 2016-03-23
+Version: 0.0.6
+Date: 2019-08-17
 Author: Moritz Gerstung
-Maintainer: <mg14@sanger.ac.uk>
+Maintainer: <moritz.gerstung@ebi.ac.uk>
 Description: Utility functions for R
 License: GPL-3
 Imports:
     RColorBrewer
-Requires: RColorBrewer
+Requires: 
+	RColorBrewer
+ 	car
 Suggests:
     grImport2
